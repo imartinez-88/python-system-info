@@ -2,6 +2,8 @@
 
 > A clean, minimalist Flask application demonstrating system monitoring with Docker and CI/CD.
 
+![Dashboard](screenshots/dashboard.png)
+
 ## Features
 
 - **Real-time Dashboard**: Beautiful gradient UI with live metrics

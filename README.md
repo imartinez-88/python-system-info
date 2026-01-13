@@ -1,7 +1,5 @@
 # Python System Info API
 
-# Python System Info API
-
 > A clean, minimalist Flask application demonstrating system monitoring with Docker and CI/CD.
 
 ## Features
@@ -64,4 +62,4 @@ This is a simplified version of a larger AWS-deployed application. Key improveme
 - Added real-time monitoring dashboard
 - Containerized for local-first development
 
-See [REFACTORING.md](REFACTORING.md) for details.
+See [(REFACTORING.md)] for details.

@@ -3,6 +3,7 @@
 > A clean, minimalist Flask application demonstrating system monitoring with Docker and CI/CD.
 
 ![Dashboard](screenshots/dashboard.png)
+<img width="1673" height="904" alt="dashboard" src="https://github.com/user-attachments/assets/063848ae-dbcc-4f97-94a5-da4508c218a7" />
 
 ## Features
 

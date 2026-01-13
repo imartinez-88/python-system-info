@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Health Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .metric-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .metric-title {
+            font-size: 1.1em;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .status-good { background: linear-gradient(90deg, #56ab2f, #a8e063); }
+        .status-warning { background: linear-gradient(90deg, #f09819, #edde5d); }
+        .status-critical { background: linear-gradient(90deg, #eb3349, #f45c43); }
+
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .last-updated {
+            text-align: center;
+            color: white;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> System Health Monitor</h1>
+            <p>Real-time system metrics and performance</p>
+        </header>
+
+        <div class="metrics-grid" id="metricsGrid">
+           
+        </div>
+
+        <div class="last-updated" id="lastUpdated"></div>
+    </div>
+
+    <button class="refresh-btn" onclick="fetchMetrics()"> Refresh</button>
+
+    <script>
+        function getStatusClass(percent) {
+            if (percent < 60) return 'status-good';
+            if (percent < 85) return 'status-warning';
+            return 'status-critical';
+        }
+
+        function formatBytes(bytes) {
+            const gb = (bytes / (1024 ** 3)).toFixed(2);
+            return `${gb} GB`;
+        }
+
+        function formatUptime(seconds) {
+            const days = Math.floor(seconds / 86400);
+            const hours = Math.floor((seconds % 86400) / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            return `${days}d ${hours}h ${mins}m`;
+        }
+
+        async function fetchMetrics() {
+            try {
+                const response = await fetch('/info');
+                const data = await response.json();
+
+                const metrics = [
+                    {
+                        icon: '<i class="fa-solid fa-desktop"></i>',
+                        title: 'CPU Usage',
+                        value: `${data.cpu_percent.toFixed(1)}%`,
+                        label: `${data.cpu_count} cores`,
+                        progress: data.cpu_percent
+                    },
+                    {
+                        icon: '<i class="fs-utility fa-semibold fa-microchip"></i>',
+                        title: 'Memory Usage',
+                        value: `${data.mem_percent.toFixed(1)}%`,
+                        label: `${formatBytes(data.mem_used)} / ${formatBytes(data.mem_total)}`,
+                        progress: data.mem_percent
+                    },
+                    {
+                        icon: '<i class="fa-utility-fill fa-semibold fa-server"></i>',
+                        title: 'Disk Usage',
+                        value: `${data.disk_percent.toFixed(1)}%`,
+                        label: `${formatBytes(data.disk_used)} / ${formatBytes(data.disk_total)}`,
+                        progress: data.disk_percent
+                    },
+                    {
+                        icon: '<i class="ifa-sharp-duotone fa-regular fa-galaxy"></i>',
+                        title: 'System Uptime',
+                        value: formatUptime(data.uptime),
+                        label: 'System running',
+                        progress: null
+                    }
+                ];
+
+                const grid = document.getElementById('metricsGrid');
+                grid.innerHTML = metrics.map(metric => `
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-icon">${metric.icon}</div>
+                            <div class="metric-title">${metric.title}</div>
+                        </div>
+                        <div class="metric-value">${metric.value}</div>
+                        <div class="metric-label">${metric.label}</div>
+                        ${metric.progress !== null ? `
+                            <div class="progress-bar">
+                                <div class="progress-fill ${getStatusClass(metric.progress)}" 
+                                     style="width: ${metric.progress}%"></div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+
+                document.getElementById('lastUpdated').textContent = 
+                    `Last updated: ${new Date().toLocaleTimeString()}`;
+
+            } catch (error) {
+                console.error('Error fetching metrics:', error);
+            }
+        }
+
+        // Fetch on load and every 5 seconds
+        fetchMetrics();
+        setInterval(fetchMetrics, 5000);
+    </script>
+</body>
+</html>

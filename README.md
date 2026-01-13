@@ -62,4 +62,4 @@ This is a simplified version of a larger AWS-deployed application. Key improveme
 - Added real-time monitoring dashboard
 - Containerized for local-first development
 
-See [(REFACTORING.md)] for details.
+See [REFACTORING.md](https://github.com/imartinez-88/python-system-info/blob/main/REFACTORING.md) for details.

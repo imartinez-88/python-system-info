@@ -7,7 +7,7 @@
 
 ## Features
 
-- **Real-time Dashboard**: Beautiful gradient UI with live metrics
+- **Real-time Dashboard**: Gradient UI with live metrics
 - **REST API**: JSON endpoints for system health and metrics
 - **Dockerized**: Production-ready containerization
 - **CI/CD**: Automated testing with GitHub Actions
